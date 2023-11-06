@@ -16,6 +16,37 @@ def main():
     loan_principal = args.principal
     payment = args.payment
     periods = args.periods
+    argument_handler(loan_type, interest, loan_principal, periods, payment)
+    interest = interest / (12 * 100)
+    if loan_type == 'annuity':
+        if payment is None and periods is not None and loan_principal is not None:
+            payment = math.ceil(annuity_payment(loan_principal, periods, interest))
+            print(f'Your monthly payment: {payment}!')
+        elif payment is not None and periods is None and loan_principal is not None:
+            periods = math.ceil(months_num(loan_principal, payment, interest))
+            years = periods // 12
+            months = periods - years * 12
+            if years == 0:
+                if months == 1:
+                    print(f'It will take {months} months to repay this loan!')
+                else:
+                    print(f'It will take {months} month to repay this loan!')
+            else:
+                if months == 1:
+                    print(f'It will take {years} years and {months} month to repay this loan!')
+                elif months == 0:
+                    print(f'It will take {years} years to repay this loan!')
+                else:
+                    print(f'It will take {years} years and {months} months to repay this loan!')
+        elif payment is not None and periods is not None and loan_principal is None:
+            loan_principal = loan_principal_calc(payment, periods, interest)
+            print(f'Your loan principal = {loan_principal}!')
+        print(f'\nOverpayment = {math.ceil(payment * periods - loan_principal)}')
+    else:
+        mth_diff_pay(loan_principal, interest, periods)
+
+
+def argument_handler(loan_type, interest, loan_principal, periods, payment):
     if loan_type != 'diff' and loan_type != 'annuity':
         print('Incorrect parameters')
         exit(0)
@@ -45,33 +76,6 @@ def main():
         if periods < 0:
             print('Incorrect parameters')
             exit(0)
-    interest = interest / (12 * 100)
-    if loan_type == 'annuity':
-        if payment is None and periods is not None and loan_principal is not None:
-            payment = math.ceil(annuity_payment(loan_principal, periods, interest))
-            print(f'Your monthly payment: {payment}!')
-        elif payment is not None and periods is None and loan_principal is not None:
-            periods = math.ceil(months_num(loan_principal, payment, interest))
-            years = periods // 12
-            months = periods - years * 12
-            if years == 0:
-                if months == 1:
-                    print(f'It will take {months} months to repay this loan!')
-                else:
-                    print(f'It will take {months} month to repay this loan!')
-            else:
-                if months == 1:
-                    print(f'It will take {years} years and {months} month to repay this loan!')
-                elif months == 0:
-                    print(f'It will take {years} years to repay this loan!')
-                else:
-                    print(f'It will take {years} years and {months} months to repay this loan!')
-        elif payment is not None and periods is not None and loan_principal is None:
-            loan_principal = loan_principal_calc(payment, periods, interest)
-            print(f'Your loan principal = {loan_principal}!')
-        print(f'\nOverpayment = {math.ceil(payment * periods - loan_principal)}')
-    else:
-        mth_diff_pay(loan_principal, interest, periods)
 
 
 def mth_diff_pay(loan_pr, i, per):
